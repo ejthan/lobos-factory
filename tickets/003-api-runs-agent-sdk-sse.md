@@ -3,7 +3,7 @@ id: "003"
 title: api — runs module with the Agent SDK and SSE
 type: product
 risk:
-state: backlog
+state: done
 created: 2026-09-17
 branch:
 pr:

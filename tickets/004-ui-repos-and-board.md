@@ -3,7 +3,7 @@ id: "004"
 title: ui — repos screen and the board
 type: product
 risk:
-state: backlog
+state: done
 created: 2026-09-17
 branch:
 pr:

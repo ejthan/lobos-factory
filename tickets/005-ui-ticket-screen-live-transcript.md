@@ -3,7 +3,7 @@ id: "005"
 title: ui — ticket screen with the live transcript
 type: product
 risk:
-state: backlog
+state: done
 created: 2026-09-17
 branch:
 pr:

@@ -3,7 +3,7 @@ id: "001"
 title: Bootstrap Nx workspace
 type: product
 risk: 
-state: backlog
+state: done
 created: 2026-09-17
 branch:
 pr:

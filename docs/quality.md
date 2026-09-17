@@ -9,7 +9,8 @@ and they move in both directions.
 | area | grade | since |
 |---|---|---|
 | Factory Core | C | 2026-09-17 |
-| Factory GUI | F | 2026-09-17 |
+| Factory GUI | C | 2026-09-17 |
+| Zusammenspiel Core ↔ GUI | D | 2026-09-17 |
 
 ## Areas
 
@@ -27,15 +28,45 @@ the shell scripts; the first real ticket is the test.
 
 ### Factory GUI
 
-_Grade: F_
+_Grade: C_
 
-Does not exist. Tickets 001–007 build it. `apps/`, `libs/`, `nx.json` and `package.json`
-are absent by design: this is the naked state the demo starts from.
+Exists and runs. `pnpm factory` starts the NestJS API (port 4711) and the Angular UI
+(4200) and opens the browser. Four screens: Repos (mit Doctor), Board (Spalten = States,
+Risk-Badge, Neues-Ticket-Formular, live über einen chokidar-Watcher), Ticket (Markdown von
+Ticket und Spec, Next-Step-Button, beide Gate-Buttons, Live-Transkript über SSE,
+Antwortfeld, Permission-Prompt) und Dashboard (PR-to-merge, Autonomie-Rate, Durchlaufzeit,
+quality.md).
+
+Belegt durch: 3 Playwright-Tests grün inklusive Screenshots von Board, Permission-Prompt
+und Agenten-Rückfrage; Unit-Tests für den Frontmatter-Parser gegen die echten Ticketfiles
+dieses Repos, für die State-Machine und für die Markdown-Pipe; Lint über alle vier
+Projekte grün, Module-Boundaries mit Tags erzwungen.
+
+Nicht belegt: ein echter Lauf gegen das Modell. Jeder Agenten-Test lief bisher im
+Fake-Modus gegen eine aufgezeichnete JSONL-Datei. Der Pfad durch das Agent SDK — `query()`,
+`canUseTool`, das Mapping der SDK-Nachrichten auf SSE-Events — ist noch nie in echt
+gelaufen.
+
+### Zusammenspiel Core ↔ GUI
+
+_Grade: D_
+
+Die GUI ruft die Core-Skripte auf (`ticket.sh`, `cfg.sh`, `doctor.sh`) und das funktioniert
+gegen dieses Repo. Der Lauf selbst startet `/factory-core:<command>` über das Agent SDK,
+was ungetestet ist. `vcs.sh` ist von der GUI aus gar nicht erreichbar — es gibt kein
+vcs-Modul, PR-Status und "merged" muss der Mensch im Ticket-Screen von Hand setzen.
 
 ## Known weaknesses
 
-- **No product code at all.** Every grade above C is unearned until a ticket has gone
-  through the whole loop.
+- **Die GUI wurde nicht von der Fabrik gebaut.** Tickets 001–006 stehen auf `done`, aber
+  sie sind in einem Zug von Hand entstanden, ohne Spec, ohne Plan, ohne PR, ohne Review.
+  Es gibt deshalb keine Reports und das Dashboard ist leer — das ist kein Bug, das ist der
+  ehrliche Zustand. Die Demo-Geschichte "die Fabrik hat sich selbst gebaut" stimmt so
+  nicht; wer sie erzählen will, muss sie erst wahr machen.
+- **Der Agent-Pfad ist ungetestet.** Alles, was die GUI über Läufe zeigt, kam bisher aus
+  einer aufgezeichneten Datei. Der erste echte Lauf wird Dinge finden.
+- **Kein vcs-Modul in der API.** PR öffnen, Diff lesen, Merge erkennen läuft nur im
+  Terminal über `vcs.sh`.
 - **The shell scripts are untested.** `ticket.sh` parses YAML frontmatter with `sed` and
   `awk`; `cfg.sh` parses two levels of YAML with `awk`. Both will break on anything fancy
   — quoted multi-line values, nested lists, tabs. Keep `.factory.yml` and ticket

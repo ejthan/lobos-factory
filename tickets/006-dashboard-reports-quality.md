@@ -3,7 +3,7 @@ id: "006"
 title: Dashboard, reports and quality.md
 type: product
 risk:
-state: backlog
+state: done
 created: 2026-09-17
 branch:
 pr:

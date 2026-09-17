@@ -11,19 +11,27 @@ Three parts:
 2. **Factory GUI** (`apps/ui`, `apps/api`) — Angular + NestJS, runs locally, drives
    the Core through the Claude Agent SDK. Board over several repos, the two human
    gates as buttons, live agent transcript, dashboard.
-3. **The story** — this repo starts naked (Core only) and the factory builds its own
-   GUI. The git history is the proof.
+3. **The story** — dieses Repo ist der erste Kunde der Fabrik. Die GUI wurde allerdings
+   von Hand gebaut, nicht von der Fabrik; siehe `docs/quality.md`.
 
 Humans are *on* the loop, not *in* it: write tickets, approve specs, merge PRs, tune
 the factory.
 
 ## Status
 
-Phase 0–2: naked factory. The GUI does not exist yet — tickets 001–007 build it.
+Core und GUI laufen lokal. Was fehlt: ein echter Agentenlauf gegen das Modell, das
+vcs-Modul in der API, CI auf GitHub (Ticket 008) und das Onboarding fremder Repos
+(Ticket 007). Siehe [docs/quality.md](docs/quality.md) — dort steht es ungeschönt.
 
 ## Run it
 
-Terminal only, for now:
+```bash
+pnpm install
+pnpm factory            # API auf 4711, UI auf 4200, Browser geht auf
+pnpm factory add .      # dieses Repo registrieren (oder einen anderen Pfad)
+```
+
+Im Terminal geht alles auch ohne GUI:
 
 ```bash
 claude
