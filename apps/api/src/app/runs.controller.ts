@@ -1,8 +1,23 @@
-import { Body, Controller, Param, Post, Sse } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Param, Post, Sse } from '@nestjs/common';
 import { Observable, concat, from, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import type { Run, RunEvent } from '@lobos-factory/models';
 import { RunsService } from './runs.service';
+
+/** The command goes into the agent's prompt, so it is a fixed list, not free text. */
+const COMMANDS = [
+  'factory-intake',
+  'factory-spec',
+  'factory-plan',
+  'factory-implement',
+  'factory-review',
+  'factory-release',
+  'factory-improve',
+  'factory-run',
+  'factory-status',
+  'factory-init',
+  'factory-doctor',
+];
 
 @Controller('runs')
 export class RunsController {
@@ -10,6 +25,12 @@ export class RunsController {
 
   @Post()
   start(@Body() body: { repoId: string; ticketId: string; command: string }): Promise<Run> {
+    if (!COMMANDS.includes(body.command)) {
+      throw new BadRequestException(`unknown factory command '${body.command}'`);
+    }
+    if (!/^\d{1,6}$/.test(body.ticketId)) {
+      throw new BadRequestException(`invalid ticket id '${body.ticketId}'`);
+    }
     return this.runs.start(body.repoId, body.ticketId, body.command);
   }
 

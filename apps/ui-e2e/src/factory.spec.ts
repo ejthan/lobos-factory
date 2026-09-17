@@ -27,10 +27,11 @@ test('board shows the tickets of this repo @smoke', async ({ page }) => {
 
 test('a run streams, asks for permission and asks a question', async ({ page }) => {
   const id = await repoId(page);
-  await page.goto(`/repo/${id}/ticket/001`);
+  // 007 is still in the backlog, so it has a next step to run
+  await page.goto(`/repo/${id}/ticket/007`);
 
-  await expect(page.getByRole('heading', { name: /Bootstrap Nx workspace/ })).toBeVisible();
-  await page.getByRole('button', { name: /factory-spec 001/ }).click();
+  await expect(page.getByRole('heading', { name: /factory-init and factory-doctor/ })).toBeVisible();
+  await page.getByRole('button', { name: /factory-spec 007/ }).click();
 
   // the agent wants to run a command, the human decides
   await expect(page.getByText('Der Agent will')).toBeVisible();

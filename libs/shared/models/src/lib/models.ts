@@ -17,7 +17,9 @@ export const GATE_STATES: Partial<Record<TicketState, string>> = {
 };
 
 export type Risk = 'low' | 'medium' | 'high' | '';
-export type TicketType = 'product' | 'factory' | 'bug';
+
+export const TICKET_TYPES = ['product', 'factory', 'bug'] as const;
+export type TicketType = (typeof TICKET_TYPES)[number];
 
 export interface Ticket {
   id: string;

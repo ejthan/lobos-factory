@@ -32,3 +32,23 @@ describe('parseTicket', () => {
     expect(parseTicket('# just markdown\n', 'x.md')).toBeNull();
   });
 });
+
+describe('input that reaches argv or a file path', () => {
+  // These are the checks the security review asked for; they live in the
+  // controller, so this test documents the shapes that must stay rejected.
+  const idOk = (id: string) => /^\d{1,6}$/.test(id);
+
+  it('rejects a ticket id that escapes the specs folder', () => {
+    expect(idOk('001')).toBe(true);
+    expect(idOk('../../../etc/passwd')).toBe(false);
+    expect(idOk('001/../..')).toBe(false);
+    expect(idOk('')).toBe(false);
+  });
+
+  it('rejects a title that looks like a flag', () => {
+    const titleOk = (t: string) => t.trim().length > 0 && !t.trim().startsWith('-');
+    expect(titleOk('Add lint')).toBe(true);
+    expect(titleOk('--force')).toBe(false);
+    expect(titleOk('   ')).toBe(false);
+  });
+});

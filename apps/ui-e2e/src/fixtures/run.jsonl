@@ -1,6 +1,6 @@
-{"type":"agent.message","at":"","role":"assistant","text":"Ich lese Ticket 001 und prüfe den Zustand."}
-{"type":"agent.tool_use","at":"","tool":"Bash","input":{"command":"ticket.sh show 001"}}
-{"type":"agent.tool_result","at":"","tool":"Bash","output":"001|backlog|product||Bootstrap Nx workspace","ok":true}
-{"type":"agent.permission","at":"","requestId":"demo-permission","tool":"Bash","input":{"command":"git worktree add -b ticket/001-bootstrap .factory/worktrees/001 main"}}
+{"type":"agent.message","at":"","role":"assistant","text":"Ich lese Ticket 007 und prüfe den Zustand."}
+{"type":"agent.tool_use","at":"","tool":"Bash","input":{"command":"ticket.sh show 007"}}
+{"type":"agent.tool_result","at":"","tool":"Bash","output":"007|backlog|product||factory-init and factory-doctor for external repos","ok":true}
+{"type":"agent.permission","at":"","requestId":"demo-permission","tool":"Bash","input":{"command":"git worktree add -b ticket/007-factory-init .factory/worktrees/007 main"}}
 {"type":"agent.message","at":"","role":"assistant","text":"Worktree steht. Ich schreibe jetzt die Spec."}
 {"type":"agent.question","at":"","questionId":"demo-question","text":"Vitest oder Jest für die Unit-Tests? Die Nx-Generatoren unterstützen beide, das entscheidet ADR 0003."}

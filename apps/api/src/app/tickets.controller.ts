@@ -1,10 +1,41 @@
-import { Body, Controller, Get, Param, Post, Sse } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Sse } from '@nestjs/common';
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
 import { Observable, Subject } from 'rxjs';
 import chokidar from 'chokidar';
-import type { Ticket } from '@lobos-factory/models';
+import { TICKET_STATES, TICKET_TYPES, type Ticket, type TicketState, type TicketType } from '@lobos-factory/models';
 import { docsDir, getRepo, listTickets, script, sh, ticketsDir } from './factory';
+
+/**
+ * Everything below goes into a shell script's argv. Values from the browser are
+ * checked against a fixed list, and a free-text title may not look like a flag.
+ */
+function checkTitle(title: string): string {
+  const clean = title.trim();
+  if (!clean) throw new BadRequestException('title is empty');
+  if (clean.startsWith('-')) throw new BadRequestException('a title may not start with "-"');
+  return clean;
+}
+
+function checkType(type: string | undefined): TicketType {
+  if (type === undefined) return 'product';
+  if (!(TICKET_TYPES as readonly string[]).includes(type)) {
+    throw new BadRequestException(`unknown ticket type '${type}'`);
+  }
+  return type as TicketType;
+}
+
+function checkState(state: string): TicketState {
+  if (!(TICKET_STATES as readonly string[]).includes(state)) {
+    throw new BadRequestException(`unknown state '${state}'`);
+  }
+  return state as TicketState;
+}
+
+function checkId(id: string): string {
+  if (!/^\d{1,6}$/.test(id)) throw new BadRequestException(`invalid ticket id '${id}'`);
+  return id;
+}
 
 /** One watcher per repo; it only ever says "something changed". */
 const changes = new Subject<{ repoId: string }>();
@@ -41,7 +72,7 @@ export class TicketsController {
 
   @Get('repos/:id/tickets/:ticketId')
   async get(@Param('id') id: string, @Param('ticketId') ticketId: string): Promise<Ticket> {
-    const t = (await listTickets(await getRepo(id))).find((x) => x.id === ticketId);
+    const t = (await listTickets(await getRepo(id))).find((x) => x.id === checkId(ticketId));
     if (!t) throw new Error(`unknown ticket ${ticketId}`);
     return t;
   }
@@ -52,7 +83,7 @@ export class TicketsController {
     const repo = await getRepo(id);
     const docs = await docsDir(repo);
     try {
-      return { markdown: await fs.readFile(join(docs, 'specs', `${ticketId}.md`), 'utf8') };
+      return { markdown: await fs.readFile(join(docs, 'specs', `${checkId(ticketId)}.md`), 'utf8') };
     } catch {
       return { markdown: '' };
     }
@@ -64,7 +95,11 @@ export class TicketsController {
     @Body() body: { title: string; type?: string; goal?: string; context?: string; criteria?: string },
   ): Promise<Ticket> {
     const repo = await getRepo(id);
-    const out = await sh(script('ticket.sh'), ['new', body.title, body.type ?? 'product'], repo.path);
+    const out = await sh(
+      script('ticket.sh'),
+      ['new', checkTitle(body.title), checkType(body.type)],
+      repo.path,
+    );
     const file = out.trim();
     const raw = await fs.readFile(file, 'utf8');
     const filled = raw
@@ -84,7 +119,7 @@ export class TicketsController {
     @Body() body: { state: string },
   ): Promise<{ ok: true }> {
     const repo = await getRepo(id);
-    await sh(script('ticket.sh'), ['state', ticketId, body.state], repo.path);
+    await sh(script('ticket.sh'), ['state', checkId(ticketId), checkState(body.state)], repo.path);
     changes.next({ repoId: id });
     return { ok: true };
   }

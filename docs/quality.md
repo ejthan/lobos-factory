@@ -67,6 +67,12 @@ vcs-Modul, PR-Status und "merged" muss der Mensch im Ticket-Screen von Hand setz
   einer aufgezeichneten Datei. Der erste echte Lauf wird Dinge finden.
 - **Kein vcs-Modul in der API.** PR öffnen, Diff lesen, Merge erkennen läuft nur im
   Terminal über `vcs.sh`.
+- **Die API hat keine Authentisierung.** Sie bindet nur auf 127.0.0.1, akzeptiert CORS nur
+  von der UI auf Port 4200 und prüft jeden Wert, der in argv oder einen Dateipfad geht
+  (Ticket-ID, Titel, Typ, State, Kommando) gegen eine feste Liste. Trotzdem gilt: wer
+  lokal Code ausführen kann, kann die Fabrik steuern. Für Stage 1 (ein Entwickler, eigene
+  Maschine) ist das vertretbar, für Stage 2 mit Server nicht — dann braucht es ein
+  Shared Secret oder echte Auth.
 - **The shell scripts are untested.** `ticket.sh` parses YAML frontmatter with `sed` and
   `awk`; `cfg.sh` parses two levels of YAML with `awk`. Both will break on anything fancy
   — quoted multi-line values, nested lists, tabs. Keep `.factory.yml` and ticket
