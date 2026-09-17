@@ -1,0 +1,12 @@
+node_modules/
+dist/
+tmp/
+.nx/
+.angular/
+coverage/
+playwright-report/
+test-results/
+.factory/
+.env
+.env.*
+.DS_Store
