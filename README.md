@@ -27,9 +27,20 @@ vcs-Modul in der API, CI auf GitHub (Ticket 008) und das Onboarding fremder Repo
 
 ```bash
 pnpm install
-pnpm factory            # API auf 4711, UI auf 4200, Browser geht auf
+pnpm factory            # UI auf 4710, API auf 4711, Browser geht auf
 pnpm factory add .      # dieses Repo registrieren (oder einen anderen Pfad)
 ```
+
+Die Ports meiden bewusst 3000, 4200, 4300 und 1337 — die gehören unseren Apps.
+Verschieben lassen sie sich so:
+
+```bash
+FACTORY_UI_PORT=5710 FACTORY_API_PORT=5711 pnpm factory
+```
+
+Der UI-Port steht zusätzlich als Default in `apps/ui/project.json`, die API-Adresse
+im Browser-Bundle in `apps/ui/src/app/api.ts` — ein Bundle liest keine
+Umgebungsvariablen.
 
 Im Terminal geht alles auch ohne GUI:
 

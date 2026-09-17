@@ -6,8 +6,8 @@ export const PORT = Number(process.env.PORT ?? 4711);
 
 /** The UI dev server and the built UI. Nothing else may talk to this API. */
 const ALLOWED_ORIGINS = [
-  `http://localhost:${process.env.UI_PORT ?? 4200}`,
-  `http://127.0.0.1:${process.env.UI_PORT ?? 4200}`,
+  `http://localhost:${process.env.UI_PORT ?? 4710}`,
+  `http://127.0.0.1:${process.env.UI_PORT ?? 4710}`,
 ];
 
 async function bootstrap() {

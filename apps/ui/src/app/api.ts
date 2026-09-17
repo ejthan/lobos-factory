@@ -1,6 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import type { DoctorFinding, Report, RepoConfig, Run, RunEvent, Ticket } from '@lobos-factory/models';
 
+// Die API läuft auf einem eigenen Port. Wird der geändert (FACTORY_API_PORT),
+// muss er hier mit — der Browser-Bundle liest keine Umgebungsvariablen.
 const BASE = 'http://localhost:4711/api';
 
 async function json<T>(url: string, init?: RequestInit): Promise<T> {

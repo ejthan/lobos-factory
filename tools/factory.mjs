@@ -11,7 +11,9 @@ import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 
 const REGISTRY = process.env.FACTORY_REGISTRY ?? join(homedir(), '.factory', 'repos.json');
-const UI = 'http://localhost:4200';
+const UI_PORT = process.env.FACTORY_UI_PORT ?? '4710';
+const API_PORT = process.env.FACTORY_API_PORT ?? '4711';
+const UI = `http://localhost:${UI_PORT}`;
 
 async function add(target) {
   const path = resolve((target ?? '.').replace(/^~/, homedir()));
@@ -51,11 +53,24 @@ async function waitFor(url, timeoutMs = 90_000) {
 }
 
 async function start() {
-  const nx = spawn('pnpm', ['nx', 'run-many', '-t', 'serve', '-p', 'api', 'ui'], {
+  const win = process.platform === 'win32';
+  // Getrennt, nicht als run-many: PORT gilt sonst für beide Prozesse und der
+  // Angular-Dev-Server würde auf den API-Port wollen.
+  const api = spawn('pnpm', ['nx', 'serve', 'api'], {
     stdio: 'inherit',
-    shell: process.platform === 'win32',
+    shell: win,
+    env: { ...process.env, PORT: API_PORT, UI_PORT },
   });
-  process.on('SIGINT', () => nx.kill('SIGINT'));
+  const ui = spawn('pnpm', ['nx', 'serve', 'ui', `--port=${UI_PORT}`], {
+    stdio: 'inherit',
+    shell: win,
+  });
+  const stop = () => {
+    api.kill('SIGINT');
+    ui.kill('SIGINT');
+  };
+  process.on('SIGINT', stop);
+  process.on('SIGTERM', stop);
 
   if (await waitFor(UI)) {
     const open = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';

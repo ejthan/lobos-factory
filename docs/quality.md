@@ -31,7 +31,7 @@ the shell scripts; the first real ticket is the test.
 _Grade: C_
 
 Exists and runs. `pnpm factory` starts the NestJS API (port 4711) and the Angular UI
-(4200) and opens the browser. Four screens: Repos (mit Doctor), Board (Spalten = States,
+(4710) and opens the browser. Four screens: Repos (mit Doctor), Board (Spalten = States,
 Risk-Badge, Neues-Ticket-Formular, live über einen chokidar-Watcher), Ticket (Markdown von
 Ticket und Spec, Next-Step-Button, beide Gate-Buttons, Live-Transkript über SSE,
 Antwortfeld, Permission-Prompt) und Dashboard (PR-to-merge, Autonomie-Rate, Durchlaufzeit,
@@ -68,7 +68,7 @@ vcs-Modul, PR-Status und "merged" muss der Mensch im Ticket-Screen von Hand setz
 - **Kein vcs-Modul in der API.** PR öffnen, Diff lesen, Merge erkennen läuft nur im
   Terminal über `vcs.sh`.
 - **Die API hat keine Authentisierung.** Sie bindet nur auf 127.0.0.1, akzeptiert CORS nur
-  von der UI auf Port 4200 und prüft jeden Wert, der in argv oder einen Dateipfad geht
+  von der UI auf Port 4710 und prüft jeden Wert, der in argv oder einen Dateipfad geht
   (Ticket-ID, Titel, Typ, State, Kommando) gegen eine feste Liste. Trotzdem gilt: wer
   lokal Code ausführen kann, kann die Fabrik steuern. Für Stage 1 (ein Entwickler, eigene
   Maschine) ist das vertretbar, für Stage 2 mit Server nicht — dann braucht es ein

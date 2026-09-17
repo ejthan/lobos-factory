@@ -4,7 +4,7 @@ import { workspaceRoot } from '@nx/devkit';
 import { join } from 'node:path';
 
 // For CI, you may want to set BASE_URL to the deployed application.
-const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
+const baseURL = process.env['BASE_URL'] || 'http://localhost:4710';
 
 /**
  * Read environment variables from file.
@@ -35,7 +35,7 @@ export default defineConfig({
   webServer: [
     {
       command: 'pnpm exec nx run ui:serve',
-      url: 'http://localhost:4200',
+      url: 'http://localhost:4710',
       reuseExistingServer: true,
       cwd: workspaceRoot,
     },
