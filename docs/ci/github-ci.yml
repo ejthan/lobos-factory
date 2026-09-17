@@ -1,0 +1,71 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  core:
+    name: factory core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shell syntax
+        run: |
+          for f in packages/factory-core/scripts/*.sh packages/factory-core/hooks/*.sh; do
+            bash -n "$f" || exit 1
+          done
+
+      - name: the board reads
+        run: |
+          n=$(packages/factory-core/scripts/ticket.sh list | wc -l)
+          echo "$n tickets"
+          [ "$n" -ge 7 ] || { echo "expected at least 7 tickets, got $n"; exit 1; }
+
+      - name: the state machine refuses
+        run: |
+          if packages/factory-core/scripts/ticket.sh state 001 planned 2>/dev/null; then
+            echo "illegal transition backlog -> planned was accepted"; exit 1
+          fi
+          echo "illegal transition refused, as it should be"
+
+  product:
+    name: product
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: is there a product yet?
+        id: guard
+        run: |
+          if [ -f nx.json ]; then
+            echo "build=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=no" >> "$GITHUB_OUTPUT"
+            echo "No Nx workspace yet — ticket 001 builds it. Nothing to verify." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: pnpm/action-setup@v4
+        if: steps.guard.outputs.build == 'yes'
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.build == 'yes'
+        with: { node-version-file: .nvmrc, cache: pnpm }
+
+      - if: steps.guard.outputs.build == 'yes'
+        run: pnpm install --frozen-lockfile
+      - if: steps.guard.outputs.build == 'yes'
+        run: pnpm nx affected -t lint test --base=origin/main
+      - if: steps.guard.outputs.build == 'yes'
+        run: pnpm exec playwright install --with-deps chromium
+      - if: steps.guard.outputs.build == 'yes'
+        run: pnpm nx affected -t e2e --base=origin/main
+
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.guard.outputs.build == 'yes'
+        with:
+          name: playwright-report
+          path: "**/test-results/**"
+          if-no-files-found: ignore

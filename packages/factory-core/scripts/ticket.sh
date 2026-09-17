@@ -96,7 +96,8 @@ case "$cmd" in
     title="${1:?usage: ticket.sh new \"<title>\" [type]}"; type="${2:-product}"
     last=$(ls "$dir"/[0-9]*.md 2>/dev/null | sed 's#.*/##; s/-.*//' | sort -n | tail -1)
     id=$(printf '%03d' $(( 10#${last:-0} + 1 )))
-    slug=$(printf '%s' "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]\+/-/g; s/^-//; s/-$//' | cut -c1-50)
+    # -E: BSD sed has no \+ , and a bad slug becomes a filename with spaces in it
+    slug=$(printf '%s' "$title" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-50)
     f="$dir/$id-$slug.md"
     cat > "$f" <<TPL
 ---

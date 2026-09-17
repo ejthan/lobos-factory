@@ -54,5 +54,12 @@ are absent by design: this is the naked state the demo starts from.
 - **Commands are namespaced `/factory-core:factory-…`.** The bare `/factory-status` from
   the plan is not recognised; a headless run of it answered from the files instead of
   running the command, which is exactly the failure mode that looks like success.
-- **No smoke test and no CI that runs anything.** `.github/workflows/ci.yml` deliberately
-  exits 0 until `nx.json` exists.
+- **CI does not run at all yet.** The workflow is written but parked at
+  `docs/ci/github-ci.yml`: GitHub refuses a workflow file from an OAuth token without the
+  `workflow` scope, and neither the device flow nor the passphrase-protected SSH key came
+  through. Ticket 008 (`type: factory`) owns it. Until then nothing verifies this repo on
+  push — the checks exist only as commands someone has to remember to run.
+- **`ticket.sh new` produced a filename with spaces in it** the first time it was used in
+  anger: BSD `sed` does not understand `\+`. Fixed with `sed -E`, but it is a reminder
+  that the shell scripts have no tests and were written against GNU habits. The next such
+  bug will also be found by a human, not by a test.
