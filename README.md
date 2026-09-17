@@ -25,10 +25,20 @@ Phase 0–2: naked factory. The GUI does not exist yet — tickets 001–007 bui
 
 Terminal only, for now:
 
-```
+```bash
 claude
-/factory-status
 ```
+
+Then `/factory-core:factory-status` for the board and `/factory-core:factory-run 001` to
+start the first ticket. If the commands are not there, register the local plugin once:
+
+```bash
+claude plugin marketplace add ./packages --scope project
+claude plugin install factory-core@lobos-local --scope project -y
+```
+
+While changing the Core itself, run `claude --plugin-dir packages/factory-core` — an
+installed plugin runs from a cache copy, a `--plugin-dir` one from the working tree.
 
 See [AGENTS.md](AGENTS.md) for the rules and [FACTORY_PLAN.md](FACTORY_PLAN.md) for
 the build plan.

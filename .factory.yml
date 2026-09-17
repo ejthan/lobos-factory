@@ -1,0 +1,13 @@
+# This repo is the factory's own first target.
+host: github
+defaultBranch: main
+packageManager: pnpm
+commands:
+  install: pnpm install --frozen-lockfile
+  lint: pnpm nx affected -t lint
+  test: pnpm nx affected -t test
+  e2e: pnpm nx affected -t e2e
+  smoke: pnpm nx e2e ui-e2e --grep @smoke
+protectedPaths: [AGENTS.md, CLAUDE.md, .claude/, docs/adr/, .factory.yml, packages/factory-core/]
+tickets: tickets
+docs: docs

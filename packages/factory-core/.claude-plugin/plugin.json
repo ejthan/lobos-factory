@@ -1,0 +1,7 @@
+{
+  "name": "factory-core",
+  "displayName": "Lobos Factory Core",
+  "version": "0.1.0",
+  "description": "The software factory as files: ticket workflow, subagents, quality gates and git-host glue. Portable across repos.",
+  "author": { "name": "Lobos" }
+}

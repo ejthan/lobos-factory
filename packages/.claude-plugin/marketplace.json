@@ -1,0 +1,16 @@
+{
+  "name": "lobos-local",
+  "owner": {
+    "name": "Lobos"
+  },
+  "plugins": [
+    {
+      "name": "factory-core",
+      "source": "./factory-core",
+      "description": "The Lobos software factory as files."
+    }
+  ],
+  "metadata": {
+    "description": "Local marketplace for this repo: the Lobos Factory Core plugin."
+  }
+}

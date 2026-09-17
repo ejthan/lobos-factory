@@ -1,0 +1,14 @@
+default:
+  image: node:22
+  before_script:
+    - corepack enable
+    - pnpm install --frozen-lockfile
+
+verify:
+  script:
+    - pnpm nx affected -t lint test --base=origin/$CI_DEFAULT_BRANCH
+    - pnpm exec playwright install --with-deps chromium
+    - pnpm nx affected -t e2e --base=origin/$CI_DEFAULT_BRANCH
+  artifacts:
+    when: always
+    paths: ["**/test-results/"]
